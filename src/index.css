@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 20% 7%;
+    --foreground: 210 20% 92%;
+
+    --card: 230 18% 11%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 230 18% 13%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 262 70% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 230 15% 18%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 230 12% 16%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 24 90% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 230 12% 22%;
+    --input: 230 12% 22%;
+    --ring: 262 70% 55%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 230 20% 5%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 262 70% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 230 15% 15%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 230 15% 14%;
+    --sidebar-ring: 262 70% 55%;
+
+    --wine: 262 70% 55%;
+    --wine-light: 262 70% 65%;
+    --wine-dark: 262 70% 40%;
+
+    --gold: 24 90% 55%;
+    --gold-light: 24 90% 65%;
+    --gold-dark: 24 90% 40%;
+
+    --success: 142 60% 45%;
+    --success-foreground: 0 0% 100%;
+
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-md border border-border/50 rounded-xl;
+  }
+
+  .wine-gradient {
+    background: linear-gradient(135deg, hsl(var(--wine-dark)), hsl(var(--wine)), hsl(var(--wine-light)));
+  }
+
+  .gold-text {
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-light)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-wine {
+    box-shadow: 0 0 30px -5px hsl(var(--wine) / 0.3);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 20px -5px hsl(var(--gold) / 0.3);
+  }
+}

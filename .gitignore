@@ -1,0 +1,13 @@
+
+# Variáveis de ambiente (não publicar)
+.env
+.env.local
+
+# Dependências e build
+node_modules
+dist
+
+# Arquivos de editor e sistema
+.vscode/
+.idea/
+.DS_Store
