@@ -4,14 +4,15 @@ import { Button } from '@/componentes/interface/button';
 import { Input } from '@/componentes/interface/input';
 import { Label } from '@/componentes/interface/label';
 import { buscarCategorias, salvarCategoria, excluirCategoria, criarLog, type Categoria } from '@/servicos/servicoBancoDados';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/componentes/interface/dialog';
 import { Switch } from '@/componentes/interface/switch';
+import { mensagemErro } from '@/utilitarios/erros';
 
 const Categorias = () => {
-  const { usuario } = usarAutenticacao();
+  const { usuario } = useAutenticacao();
   const [categorias, definirCategorias] = useState<Categoria[]>([]);
   const [carregando, definirCarregando] = useState(true);
   const [modalAberto, definirModalAberto] = useState(false);
@@ -23,8 +24,8 @@ const Categorias = () => {
     definirCarregando(true);
     try {
       definirCategorias(await buscarCategorias());
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirCarregando(false);
   };
@@ -62,8 +63,8 @@ const Categorias = () => {
       toast.success(editando ? 'Categoria atualizada!' : 'Categoria criada!');
       definirModalAberto(false);
       carregar();
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirSalvando(false);
   };
@@ -74,8 +75,8 @@ const Categorias = () => {
       await excluirCategoria(c.id);
       toast.success('Categoria excluída');
       carregar();
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
   };
 

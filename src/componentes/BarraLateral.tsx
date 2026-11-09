@@ -3,7 +3,7 @@ import {
   Wine, LayoutDashboard, ShoppingCart, BarChart3, LogOut,
   Package, Boxes, Users, Settings, ClipboardList, ChevronLeft, ChevronRight, FolderOpen
 } from 'lucide-react';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import { useState } from 'react';
 import logo from "../assets/favicon.ico"
 const itensAdministrador = [
@@ -24,7 +24,7 @@ const itensOperador = [
 ];
 
 const BarraLateral = () => {
-  const { usuario, sair, ehAdministrador: ehAdministrador } = usarAutenticacao();
+  const { usuario, sair, ehAdministrador: ehAdministrador } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
   const [recolhida, definirRecolhida] = useState(false);

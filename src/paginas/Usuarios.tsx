@@ -3,16 +3,17 @@ import { Shield, UserIcon, Edit2, Loader2 } from 'lucide-react';
 import { Button } from '@/componentes/interface/button';
 import { Label } from '@/componentes/interface/label';
 import { buscarPerfis, atualizarPerfil, atualizarPapel, criarLog, type Perfil } from '@/servicos/servicoBancoDados';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/componentes/interface/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componentes/interface/select';
 import { Switch } from '@/componentes/interface/switch';
 import { Input } from '@/componentes/interface/input';
+import { mensagemErro } from '@/utilitarios/erros';
 
 const Usuarios = () => {
-  const { usuario } = usarAutenticacao();
+  const { usuario } = useAutenticacao();
   const [perfis, definirPerfis] = useState<(Perfil & { papel?: string })[]>([]);
   const [carregando, definirCarregando] = useState(true);
   const [modalAberto, definirModalAberto] = useState(false);
@@ -24,8 +25,8 @@ const Usuarios = () => {
     definirCarregando(true);
     try {
       definirPerfis(await buscarPerfis());
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirCarregando(false);
   };
@@ -53,8 +54,8 @@ const Usuarios = () => {
       toast.success('Usuário atualizado!');
       definirModalAberto(false);
       carregar();
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirSalvando(false);
   };

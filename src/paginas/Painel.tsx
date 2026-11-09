@@ -4,6 +4,7 @@ import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { buscarVendas, buscarProdutos, type VendaCompleta, type Produto } from '@/servicos/servicoBancoDados';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'sonner';
+import { mensagemErro } from '@/utilitarios/erros';
 
 const CORES_GRAFICOS = ['hsl(345,60%,40%)', 'hsl(42,70%,55%)', 'hsl(142,60%,40%)', 'hsl(200,60%,50%)', 'hsl(280,60%,50%)'];
 const estiloDica = { background: 'hsl(20,10%,12%)', border: '1px solid hsl(20,10%,20%)', borderRadius: '8px', color: 'hsl(30,20%,90%)', fontSize: '12px' };
@@ -30,8 +31,8 @@ const Painel = () => {
             duration: 8000,
           });
         }
-      } catch (e: any) {
-        toast.error('Erro: ' + e.message);
+      } catch (e: unknown) {
+        toast.error('Erro: ' + mensagemErro(e));
       }
       definirCarregando(false);
     };

@@ -8,6 +8,7 @@ import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/componentes/interface/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componentes/interface/select';
+import { mensagemErro } from '@/utilitarios/erros';
 
 type TipoMovimentacao = 'entrada' | 'saida' | 'ajuste';
 
@@ -28,8 +29,8 @@ const Estoque = () => {
       const [produtosCarregados, movimentacoesCarregadas] = await Promise.all([buscarProdutos(), buscarMovimentacoes()]);
       definirProdutos(produtosCarregados);
       definirMovimentacoes(movimentacoesCarregadas);
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirCarregando(false);
   };
@@ -53,8 +54,8 @@ const Estoque = () => {
       definirQuantidade(0);
       definirMotivo('');
       carregar();
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirSalvando(false);
   };

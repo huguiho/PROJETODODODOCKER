@@ -1,6 +1,6 @@
 // Serviço centralizado para todas as operações com o banco de dados
 import { supabase } from '@/integrations/supabase/client';
-import type { Tables, TablesInsert } from '@/integrations/supabase/types';
+import type { Json, Tables, TablesInsert } from '@/integrations/supabase/types';
 import { calcularEstoquesDisponiveis } from './estoqueCompartilhado';
 
 // ===== TIPOS =====
@@ -149,19 +149,19 @@ export async function criarLog(log: TablesInsert<'logs_atividade'>): Promise<voi
 }
 
 // ===== CONFIGURAÇÕES =====
-export async function buscarConfiguracoes(): Promise<Record<string, any>> {
+export async function buscarConfiguracoes(): Promise<Record<string, Json>> {
   const { data: dados, error: erro } = await supabase
     .from('configuracoes')
     .select('*');
   if (erro) throw erro;
-  const configuracoes: Record<string, any> = {};
+  const configuracoes: Record<string, Json> = {};
   (dados || []).forEach(c => {
     configuracoes[c.chave] = c.valor;
   });
   return configuracoes;
 }
 
-export async function salvarConfiguracao(chave: string, valor: any): Promise<void> {
+export async function salvarConfiguracao(chave: string, valor: Json): Promise<void> {
   const { error: erro } = await supabase
     .from('configuracoes')
     .update({ valor })

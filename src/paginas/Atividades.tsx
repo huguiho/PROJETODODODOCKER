@@ -3,6 +3,7 @@ import { ClipboardList, Loader2 } from 'lucide-react';
 import { buscarLogs, type LogAtividade } from '@/servicos/servicoBancoDados';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { toast } from 'sonner';
+import { mensagemErro } from '@/utilitarios/erros';
 
 const rotulosTipos: Record<string, string> = {
   login: 'Login', logout: 'Logout', venda: 'Venda', cancelamento: 'Cancelamento',
@@ -30,8 +31,8 @@ const Atividades = () => {
     const carregar = async () => {
       try {
         definirLogs(await buscarLogs());
-      } catch (e: any) {
-        toast.error('Erro: ' + e.message);
+      } catch (e: unknown) {
+        toast.error('Erro: ' + mensagemErro(e));
       }
       definirCarregando(false);
     };

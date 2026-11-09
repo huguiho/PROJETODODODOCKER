@@ -3,13 +3,16 @@ import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Printer, X, Smartpho
 import { Button } from '@/componentes/interface/button';
 import { Input } from '@/componentes/interface/input';
 import { buscarProdutos, buscarConfiguracoes, buscarCategorias, buscarVendas, criarVenda, type Produto, type Categoria, type VendaCompleta } from '@/servicos/servicoBancoDados';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
-import { usarAtalhosTeclado } from '@/comportamentos/usarAtalhosTeclado';
+import { useAtalhosTeclado } from '@/comportamentos/usarAtalhosTeclado';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/componentes/interface/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componentes/interface/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/componentes/interface/sheet';
+import type { Json } from '@/integrations/supabase/types';
+import { lerConfiguracaoLoja, lerConfiguracaoPagamento } from '@/utilitarios/configuracoes';
+import { mensagemErro } from '@/utilitarios/erros';
 
 type FormaPagamento = 'dinheiro' | 'debito' | 'credito' | 'pix';
 
@@ -28,7 +31,7 @@ interface PagamentoMisto {
 }
 
 const Vendas = () => {
-  const { usuario } = usarAutenticacao();
+  const { usuario } = useAutenticacao();
   const [busca, definirBusca] = useState('');
   const [carrinho, definirCarrinho] = useState<ItemCarrinho[]>([]);
   const [modalPagamento, definirModalPagamento] = useState(false);
@@ -40,7 +43,7 @@ const Vendas = () => {
   const [produtos, definirProdutos] = useState<Produto[]>([]);
   const [categorias, definirCategorias] = useState<Categoria[]>([]);
   const [filtroCategoria, definirFiltroCategoria] = useState<string>('todas');
-  const [configuracoes, definirConfiguracoes] = useState<Record<string, any>>({});
+  const [configuracoes, definirConfiguracoes] = useState<Record<string, Json>>({});
   const [carregando, definirCarregando] = useState(true);
   const [finalizando, definirFinalizando] = useState(false);
   const [carrinhoAberto, definirCarrinhoAberto] = useState(false);
@@ -64,8 +67,8 @@ const Vendas = () => {
         definirProdutos(produtosCarregados.filter(p => p.ativo));
         definirConfiguracoes(configuracoesCarregadas);
         definirCategorias(categoriasCarregadas.filter(c => c.ativo));
-      } catch (e: any) {
-        toast.error('Erro ao carregar: ' + e.message);
+      } catch (e: unknown) {
+        toast.error('Erro ao carregar: ' + mensagemErro(e));
       }
       definirCarregando(false);
     };
@@ -143,12 +146,12 @@ const Vendas = () => {
       credito: numero > 1 ? 'pagamento_credito_parcelado' : 'pagamento_credito_avista',
       pix: 'pagamento_pix',
     };
-    const configuracao = configuracoes[mapaConfig[forma]];
+    const configuracao = lerConfiguracaoPagamento(configuracoes[mapaConfig[forma]]);
     if (!configuracao) return 0;
-    if (forma === 'credito' && numero > 1 && configuracao.taxas?.[String(numero)]) {
+    if (forma === 'credito' && numero > 1 && configuracao?.taxas?.[String(numero)]) {
       return configuracao.taxas[String(numero)];
     }
-    return configuracao.taxa || 0;
+    return configuracao?.taxa || 0;
   };
 
   const taxa = obterTaxa();
@@ -220,7 +223,7 @@ const Vendas = () => {
         }))
       );
 
-      const loja = configuracoes.loja || {};
+      const loja = lerConfiguracaoLoja(configuracoes.loja) || {};
       const linhas = [
         '='.repeat(40),
         (loja.nome || 'Adega PDV').toUpperCase(),
@@ -252,8 +255,8 @@ const Vendas = () => {
 
       const produtosCarregados = await buscarProdutos();
       definirProdutos(produtosCarregados.filter(p => p.ativo));
-    } catch (e: any) {
-      toast.error('Erro ao finalizar venda: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro ao finalizar venda: ' + mensagemErro(e));
     }
     definirFinalizando(false);
   };
@@ -261,7 +264,7 @@ const Vendas = () => {
   const limparCarrinho = () => { definirCarrinho([]); toast.info('Carrinho limpo'); };
   const formatarMoeda = (v: number) => `R$ ${v.toFixed(2)}`;
 
-  usarAtalhosTeclado({
+  useAtalhosTeclado({
     'F2': () => referenciaBusca.current?.focus(),
     'F4': () => carrinho.length > 0 && definirModalPagamento(true),
     'escape': () => { definirModalPagamento(false); definirModalCupom(false); },
@@ -281,14 +284,14 @@ const Vendas = () => {
     try {
       const vendas = await buscarVendas();
       definirVendasHistorico(vendas.slice(0, 50));
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error('Erro ao buscar histórico');
     }
     definirCarregandoHistorico(false);
   };
 
   const gerarCupomHistorico = (venda: VendaCompleta) => {
-    const loja = configuracoes.loja || {};
+    const loja = lerConfiguracaoLoja(configuracoes.loja) || {};
     const linhas = [
       '='.repeat(40),
       (loja.nome || 'Adega PDV').toUpperCase(),

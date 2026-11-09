@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import BarraLateral from '@/componentes/BarraLateral';
 import { Loader2 } from 'lucide-react';
 
@@ -10,7 +10,7 @@ interface PropriedadesEstrutura {
 }
 
 const EstruturaAplicacao = ({ children, exigirAdministrador: exigirAdministrador = false }: PropriedadesEstrutura) => {
-  const { estaAutenticado: estaAutenticado, ehAdministrador: ehAdministrador, carregando } = usarAutenticacao();
+  const { estaAutenticado: estaAutenticado, ehAdministrador: ehAdministrador, carregando } = useAutenticacao();
   const navegar = useNavigate();
 
   useEffect(() => {

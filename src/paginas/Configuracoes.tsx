@@ -4,31 +4,42 @@ import { Button } from '@/componentes/interface/button';
 import { Input } from '@/componentes/interface/input';
 import { Label } from '@/componentes/interface/label';
 import { buscarConfiguracoes, salvarConfiguracao, criarLog } from '@/servicos/servicoBancoDados';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { toast } from 'sonner';
 import { Switch } from '@/componentes/interface/switch';
+import { mensagemErro } from '@/utilitarios/erros';
+import { lerConfiguracaoLoja, lerConfiguracaoPagamento, type ConfiguracaoPagamento } from '@/utilitarios/configuracoes';
 
 const Configuracoes = () => {
-  const { usuario } = usarAutenticacao();
+  const { usuario } = useAutenticacao();
   const [carregando, definirCarregando] = useState(true);
   const [salvando, definirSalvando] = useState(false);
   const [loja, definirLoja] = useState({ nome: '', endereco: '', telefone: '', cnpj: '' });
-  const [pagamentos, definirPagamentos] = useState<Record<string, any>>({});
+  const [pagamentos, definirPagamentos] = useState<Record<string, ConfiguracaoPagamento>>({});
 
   useEffect(() => {
     const carregar = async () => {
       try {
         const configuracoes = await buscarConfiguracoes();
-        if (configuracoes.loja) definirLoja(configuracoes.loja);
+        const lojaCarregada = lerConfiguracaoLoja(configuracoes.loja);
+        if (lojaCarregada) {
+          definirLoja({
+            nome: lojaCarregada.nome || '',
+            endereco: lojaCarregada.endereco || '',
+            telefone: lojaCarregada.telefone || '',
+            cnpj: lojaCarregada.cnpj || '',
+          });
+        }
         // Carregar configs de pagamento
-        const pagamentosCarregados: Record<string, any> = {};
+        const pagamentosCarregados: Record<string, ConfiguracaoPagamento> = {};
         ['pagamento_dinheiro', 'pagamento_debito', 'pagamento_credito_avista', 'pagamento_credito_parcelado', 'pagamento_pix'].forEach(k => {
-          if (configuracoes[k]) pagamentosCarregados[k] = configuracoes[k];
+          const pagamento = lerConfiguracaoPagamento(configuracoes[k]);
+          if (pagamento) pagamentosCarregados[k] = pagamento;
         });
         definirPagamentos(pagamentosCarregados);
-      } catch (e: any) {
-        toast.error('Erro: ' + e.message);
+      } catch (e: unknown) {
+        toast.error('Erro: ' + mensagemErro(e));
       }
       definirCarregando(false);
     };
@@ -49,13 +60,13 @@ const Configuracoes = () => {
         usuario_nome: usuario?.nome || '',
       });
       toast.success('Configurações salvas!');
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirSalvando(false);
   };
 
-  const atualizarPagamento = (chave: string, alteracoes: Record<string, any>) => {
+  const atualizarPagamento = (chave: string, alteracoes: Partial<ConfiguracaoPagamento>) => {
     definirPagamentos(anterior => ({ ...anterior, [chave]: { ...anterior[chave], ...alteracoes } }));
   };
 

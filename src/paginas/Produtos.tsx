@@ -4,9 +4,10 @@ import { Button } from '@/componentes/interface/button';
 import { Input } from '@/componentes/interface/input';
 import { Label } from '@/componentes/interface/label';
 import { buscarProdutos, salvarProduto, excluirProduto, buscarCategorias, criarLog, type Produto, type Categoria } from '@/servicos/servicoBancoDados';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { toast } from 'sonner';
+import { mensagemErro } from '@/utilitarios/erros';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/componentes/interface/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componentes/interface/select';
 import { Switch } from '@/componentes/interface/switch';
@@ -14,7 +15,7 @@ import { Switch } from '@/componentes/interface/switch';
 const ITENS_POR_PAGINA = 10;
 
 const Produtos = () => {
-  const { usuario } = usarAutenticacao();
+  const { usuario } = useAutenticacao();
   const [produtos, definirProdutos] = useState<Produto[]>([]);
   const [categorias, definirCategorias] = useState<Categoria[]>([]);
   const [carregando, definirCarregando] = useState(true);
@@ -36,8 +37,8 @@ const Produtos = () => {
       const [produtosCarregados, categoriasCarregadas] = await Promise.all([buscarProdutos(), buscarCategorias()]);
       definirProdutos(produtosCarregados);
       definirCategorias(categoriasCarregadas);
-    } catch (e: any) {
-      toast.error('Erro ao carregar produtos: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro ao carregar produtos: ' + mensagemErro(e));
     }
     definirCarregando(false);
   };
@@ -108,8 +109,8 @@ const Produtos = () => {
       toast.success(editando ? 'Produto atualizado!' : 'Produto criado!');
       definirModalAberto(false);
       carregar();
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
     definirSalvando(false);
   };
@@ -126,8 +127,8 @@ const Produtos = () => {
       });
       toast.success('Produto excluído');
       carregar();
-    } catch (e: any) {
-      toast.error('Erro: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro: ' + mensagemErro(e));
     }
   };
 

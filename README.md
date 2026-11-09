@@ -48,7 +48,7 @@ Um sistema **PDV (Ponto de Venda)** completo e profissional para pequenos e méd
 
 ### Pré-requisitos
 
-- Node.js (versão 18 ou superior)
+- Node.js (versão 22.12 ou superior)
 - npm, yarn, pnpm ou bun
 
 ### Instalação
@@ -63,10 +63,9 @@ npm install
 # ou
 bun install
 
-# Configure as variáveis de ambiente
-# Crie um arquivo .env na raiz com:
+# Copie .env.example para .env e preencha os valores:
 # VITE_SUPABASE_URL=<sua-url-do-supabase>
-# VITE_SUPABASE_ANON_KEY=<sua-chave-anon>
+# VITE_SUPABASE_PUBLISHABLE_KEY=<sua-chave-publica>
 
 # Inicie o servidor de desenvolvimento
 npm run dev
@@ -85,6 +84,23 @@ bun run build
 ```
 
 Os arquivos de produção serão gerados na pasta `dist/`.
+
+---
+
+## Deploy no Coolify
+
+O projeto é uma aplicação web estática e usa um projeto Supabase externo. O `Dockerfile` compila o frontend e serve os arquivos com Nginx na porta `3000`; as rotas da aplicação também são encaminhadas para o React Router.
+
+1. No Coolify, crie um recurso **Application** conectado ao repositório e selecione a branch desejada.
+2. Use o build pack **Dockerfile**, com diretório base `/` e caminho do Dockerfile `/Dockerfile`.
+3. Configure estas variáveis como **build arguments** (ou marque-as como disponíveis durante o build):
+   - `VITE_SUPABASE_URL`: URL do projeto Supabase.
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`: chave publicável do Supabase.
+   - `VITE_SUPABASE_PROJECT_ID`: opcional; não é consumida diretamente pelo frontend.
+4. Configure a porta do container como `3000` e associe o domínio desejado à aplicação.
+5. Faça o deploy. O Dockerfile valida que as duas variáveis do Supabase foram informadas antes de compilar.
+
+As variáveis `VITE_*` são incorporadas ao frontend durante o build; defini-las somente no ambiente de execução do container não atualiza a configuração da aplicação. Use apenas a chave publicável no frontend, nunca uma chave `service_role`.
 
 ---
 

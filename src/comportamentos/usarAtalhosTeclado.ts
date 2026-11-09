@@ -4,7 +4,7 @@ interface MapaAtalhos {
   [chave: string]: () => void;
 }
 
-export function usarAtalhosTeclado(atalhos: MapaAtalhos) {
+export function useAtalhosTeclado(atalhos: MapaAtalhos) {
   const tratarTecla = useCallback((e: KeyboardEvent) => {
     // Compõe a combinação pressionada, como ctrl+f2.
     const partes: string[] = [];

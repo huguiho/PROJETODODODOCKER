@@ -4,7 +4,7 @@ import { Mail, Lock, User, UserPlus, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/componentes/interface/button';
 import { Input } from '@/componentes/interface/input';
 import { Label } from '@/componentes/interface/label';
-import { usarAutenticacao } from '@/contextos/ContextoAutenticacao';
+import { useAutenticacao } from '@/contextos/ContextoAutenticacao';
 import { toast } from 'sonner';
 import logo from "../assets/favicon.ico"
 
@@ -14,7 +14,7 @@ const Cadastro = () => {
   const [senha, definirSenha] = useState('');
   const [carregando, definirCarregando] = useState(false);
   const [emailEnviado, definirEmailEnviado] = useState(false);
-  const { registrar } = usarAutenticacao();
+  const { registrar } = useAutenticacao();
   const navegar = useNavigate();
 
   const realizarCadastro = async (e: React.FormEvent) => {

@@ -171,8 +171,8 @@ export function ProvedorAutenticacao({ children }: { children: ReactNode }) {
   );
 }
 
-export function usarAutenticacao() {
+export function useAutenticacao() {
   const contexto = useContext(ContextoAutenticacao);
-  if (!contexto) throw new Error('usarAutenticacao deve ser usado dentro de ProvedorAutenticacao');
+  if (!contexto) throw new Error('useAutenticacao deve ser usado dentro de ProvedorAutenticacao');
   return contexto;
 }

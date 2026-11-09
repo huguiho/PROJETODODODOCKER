@@ -3,13 +3,14 @@ import { Download, FileText, Filter, Loader2 } from 'lucide-react';
 import { Button } from '@/componentes/interface/button';
 import { Input } from '@/componentes/interface/input';
 import { Label } from '@/componentes/interface/label';
-import { buscarVendas, buscarPerfis, type VendaCompleta } from '@/servicos/servicoBancoDados';
+import { buscarVendas, buscarPerfis, type Perfil, type VendaCompleta } from '@/servicos/servicoBancoDados';
 import EstruturaAplicacao from '@/componentes/EstruturaAplicacao';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componentes/interface/select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
+import { mensagemErro } from '@/utilitarios/erros';
 
 const estiloDica = { background: 'hsl(20,10%,12%)', border: '1px solid hsl(20,10%,20%)', borderRadius: '8px', color: 'hsl(30,20%,90%)', fontSize: '12px' };
 const formatarMoeda = (v: number) => `R$ ${v.toFixed(2)}`;
@@ -17,7 +18,7 @@ const formatarMoeda = (v: number) => `R$ ${v.toFixed(2)}`;
 const Relatorios = () => {
   const [carregando, definirCarregando] = useState(true);
   const [todasVendas, definirTodasVendas] = useState<VendaCompleta[]>([]);
-  const [perfis, definirPerfis] = useState<any[]>([]);
+  const [perfis, definirPerfis] = useState<Perfil[]>([]);
   const [filtros, definirFiltros] = useState({
     dataInicio: new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0],
     dataFim: new Date().toISOString().split('T')[0],
@@ -31,8 +32,8 @@ const Relatorios = () => {
         const [v, p] = await Promise.all([buscarVendas(), buscarPerfis()]);
         definirTodasVendas(v.filter(s => !s.cancelada));
         definirPerfis(p);
-      } catch (e: any) {
-        toast.error('Erro: ' + e.message);
+      } catch (e: unknown) {
+        toast.error('Erro: ' + mensagemErro(e));
       }
       definirCarregando(false);
     };
